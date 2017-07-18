@@ -1,0 +1,8 @@
+Algorithms implemented:
+    - Hill Climbing
+    - A*
+    - Uniform Cost Search
+    - Breadth First Search
+    - Depth First Search
+    - Depth Limited Search
+    - Iterative Deepening DFS
