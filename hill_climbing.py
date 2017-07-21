@@ -1,40 +1,35 @@
 # coding=utf-8
-from n_queen import NQueenState
+import n_queen
 
-def hill_climbing_search(problem, # problem object
-                         optimum=-1 # 1: local max, -1: local min
-                        ):
+
+def hill_climbing_search(problem):
     current = problem
     while True:
-        successor = NQueenState.best_successor(current)
-        if optimum==1:
-            if successor.heuristic_value <= current.heuristic_value:
-                return current
-        elif optimum==-1:
-            if successor.heuristic_value >= current.heuristic_value:
-                return current
+        successor = n_queen.NQueenState.best_successor(current)
+        if successor.heuristic_value <= current.heuristic_value:
+            return successor
+        current = successor
+
+
+def hill_climbing_search_rr(problem):
+    current = problem
+    N = len(problem.board)
+    while True:
+        successor = n_queen.NQueenState.best_successor(current)
+        if successor.heuristic_value > current.heuristic_value:
+            return current
+        elif successor.heuristic_value == current.heuristic_value:
+            successor = n_queen.NQueenState.random_state(N)
         current = successor
 
 
 # RANDOM RESTART HILL CLIMBING
-def hill_climbing_search_rr(problem, # problem object,
-                            random_initial_state,
-                            optimum=-1 # 1: local max, -1: local min
-                           ):
+def hill_climbing_search_rr2(problem):
     current = problem
-    local_optimum = None
-    while True:
-        successor = NQueenState.best_successor(current)
-        if optimum==1:
-            if successor.heuristic_value < current.heuristic_value:
-                return current
-        elif optimum==-1:
-            if successor.heuristic_value > current.heuristic_value:
-                return current
-        if local_optimum is not None                                           \
-            and successor.heuristic_value==local_optimum: # RESTART
-            current = NQueenState(random_initial_state())
-            local_optimum = None
-            continue
+    N = len(problem.board)
+    while current.heuristic_value != 0:
+        successor = n_queen.NQueenState.best_successor(current)
+        if successor.heuristic_value <= current.heuristic_value:
+            successor = n_queen.NQueenState.random_state(N)
         current = successor
-        local_optimum = current.heuristic_value
+    return current
