@@ -13,7 +13,17 @@ NSW = 8
 V = 9
 T = 10
 
-graph = {
+C1 = 11
+C2 = 12
+C3 = 13
+C4 = 14
+C5 = 15
+C6 = 16
+C7 = 17
+C8 = 18
+C9 = 19
+
+graph1 = {
     NT: [WA, SA, Q],
     WA: [SA, NT],
     SA: [WA, NT, Q, NSW, V],
@@ -23,6 +33,18 @@ graph = {
     T: []
 }
 
+graph2 = {
+    C1: [C2, C4],
+    C2: [C1, C3, C4, C5],
+    C3: [C2, C5, C6],
+    C4: [C1, C2, C5, C7],
+    C5: [C2, C3, C4, C6, C7, C8],
+    C6: [C3, C5, C8, C9],
+    C7: [C4, C5, C8],
+    C8: [C5, C6, C7, C9],
+    C9: [C6, C8]
+}
+
 # state
 """
 {
@@ -30,35 +52,32 @@ graph = {
     ....
 }
 """
-def assignment_consistent(city, color, state):
-    global graph
-    consistent = True
-    for adj_city in graph[city]:
+def assignment_valid(city, color, state):
+    global graph2
+    for adj_city in graph2[city]:
         if color == state[adj_city]:
-            consistent = False
-            break
-    return consistent
+            return False
+    return True
 
 
 def assignment_complete_and_valid(state):
-    complete = True
+    if state is None:
+        return False
     for city in state:
         if state[city] == NO_COLOR:
-            complete = False
-            break
-        elif not assignment_consistent(city, state[city], state):
-            complete = False
-            break
-    return complete
+            return False
+        elif not assignment_valid(city, state[city], state):
+            return False
+    return True
 
 
 def assignment_complete(state):
-    complete = True
+    if state is None:
+        return False
     for city in state:
         if state[city] == NO_COLOR:
-            complete = False
-            break
-    return complete
+            return False
+    return True
 
 
 def unassigned_city(state):
@@ -67,20 +86,23 @@ def unassigned_city(state):
             return city
     return None
 
-def rmap_coloring(state): # recursive map coloring, backtrack
+def coloring(state): # recursive map coloring, backtrack
     global NO_COLOR, RED, GREEN, BLUE
     if assignment_complete(state):
+        print "STATEC:", state
         return state
+    else:
+        city = unassigned_city(state)
+        print "CITY:", city
+        for color in [RED, GREEN, BLUE]:
+            if assignment_valid(city, color, state):
+                state[city] = color
+                result = coloring(state)
+                if assignment_complete(result):
+                    return result
+                state[city] = NO_COLOR
 
-    city = unassigned_city(state)
-    for color in [RED, GREEN, BLUE]:
-        if assignment_consistent(city, color, state):
-            state[city] = color
-            return rmap_coloring(state)
-            #if assignment_complete_and_valid(result):
-            #    return result
-            state[city] = NO_COLOR
-initial_state = {
+initial_state1 = {
     NT: NO_COLOR,
     WA: NO_COLOR,
     SA: NO_COLOR,
@@ -89,4 +111,15 @@ initial_state = {
     NSW: NO_COLOR,
     T: NO_COLOR
 }
-print rmap_coloring(initial_state)
+initial_state2 = {
+    C1: NO_COLOR,
+    C2: NO_COLOR,
+    C3: NO_COLOR,
+    C4: NO_COLOR,
+    C5: NO_COLOR,
+    C6: NO_COLOR,
+    C7: NO_COLOR,
+    C8: NO_COLOR,
+    C9:NO_COLOR
+}
+print rmap_coloring(initial_state2)
